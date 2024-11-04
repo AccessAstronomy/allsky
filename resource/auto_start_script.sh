@@ -1,11 +1,11 @@
 #!/bin/bash
 # Add Home Path !!
-HOME=/home/EOSRP/
+HOME=`crudini --get allsky.ini Paths Home`/
 
 # Added into cronjob as 
 # 30 * * * * /home/EOSRP/auto_start_script.sh
 # Make sure to have this executable
-script_name=allsky-v8.3.j.log.py
+script_name=allsky-latest.py
 
 process_counts=$(ps aux | grep -i 'python' | grep -i $script_name | wc -l)
 
