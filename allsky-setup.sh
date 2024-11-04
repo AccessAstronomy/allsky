@@ -4,7 +4,9 @@ echo -n "Enter Location Name (e.g. Zernike) "
 read locate
 echo -n "Enter Camera Type (e.g. SQC) "
 read CAMERA
-echo -n "Enter File Suffix (e.g. cr2) "
+echo -n "Enter File Prefix (e.g. RP or SQC) "
+read PREFIX
+echo -n "Enter File Suffix (e.g. cr3 or cr2) "
 read SUFFIX
 DEVICE=$locate"_"$CAMERA
 
@@ -39,7 +41,7 @@ sudo apt install crudini -y
 crudini --set allsky.ini Paths Camera_ID $DEVICE
 crudini --set allsky.ini Paths Camera_Plug_MQQT $PLUG
 crudini --set allsky.ini Paths Home $HOME
-crudini --set allsky.ini Camera Prefix $CAMERA
+crudini --set allsky.ini Camera Prefix $PREFIX
 crudini --set allsky.ini Camera Suffix $SUFFIX
 crudini --set allsky.ini Cronitor Cronitor_Key $CRONKEY
 crudini --set allsky.ini Cronitor Cronitor_Root $CRONROOT
