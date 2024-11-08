@@ -12,3 +12,6 @@ bash <(curl -sL https://github.com/AccessAstronomy/allsky/raw/refs/heads/main/al
 * You need to update the slack token in goodmorning.py and archivespace.py
 * You need to set the latitude and longitude in allsky.ini
 * You need to update the ssh key, and tunnel settings, in the archiving computer
+```
+ssh-copy-id sqc@uk1.pitunnel.com -p 22184
+```
