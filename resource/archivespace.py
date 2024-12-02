@@ -7,6 +7,7 @@ config = ConfigParser()
 config.read('allsky.ini')
 device_name = config["Paths"]["Camera_ID"]
 suffix = config["Camera"]["Suffix"]
+token = config["Slack"]["Key"]
 
 used = float(os.popen("df /home/Archive/ | awk '{ print $5 }' | tail -n 1| cut -d'%' -f1").read().strip('\n'))
 free = float(os.popen("df /home/Archive/ | awk '{ print $4 }' | tail -n 1| cut -d'%' -f1").read().strip('\n'))/1024/1024
@@ -53,7 +54,7 @@ blocks_json = [
 	]
 
 
-client = WebClient(token="xoxb-4291898519700-6373490897475-ee2U75HCGbJnylcb6zGXOLpy")
+client = WebClient(token=token)
 channel_id = "C06729CNQKC" #system-monitor
 #channel_id = "C06AK1ZFKBR" #bottest
 result = client.chat_postMessage(
