@@ -40,6 +40,8 @@ wget $GITROOT/camera_heartbeat.sh
 wget $GITROOT/check_space.bash
 wget $GITROOT/goodmorning.bash
 wget $GITROOT/goodmorning.py
+wget $GITROOT/slacker_2.py
+wget $GITROOT/slacker_2.bash
 
 sudo apt update
 sudo apt upgrade -y
