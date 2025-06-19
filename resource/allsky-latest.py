@@ -1,4 +1,16 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+# # -*- coding: utf-8 -*-
+
+"""allsky-latest.py: Control for All Sky Night Time Monitoring with Raspberry Pi and Canon Cameras"""
+
+__author__ = "Jake Noel-Storr"
+__copyright__ = "Copyright 2024 - 2025, Keep It Dark Project"
+__credits__ = ["Jake Noel-Storr", "Bjoern Poppe", "Felix Semler"]
+__license__ = "GPL"
+__version__ = "9.2.j.log"
+__maintainer__ = "Jake Noel-Storr"
+__email__ = "jake@accessastronomy.eu"
+__status__ = "Production"
 
 import datetime
 import time    
@@ -7,6 +19,16 @@ import ephem
 from configparser import ConfigParser
 import logging
 import fnmatch
+from functools import wraps
+
+def add_method(cls):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            return func(*args, **kwargs)
+        setattr(cls, func.__name__, wrapper)
+        return func
+    return decorator
 
 class ImagingControl:
     def __init__(self,inifile):
@@ -114,19 +136,22 @@ class ImagingControl:
     def allsky(self):
         ImagingControl.observing_details(self)
         ImagingControl.set_directory(self)
-        
         ImagingControl.buildLog(self)
+        slacker("Built Log: "+self.log_filename,"building_construction","#add8e6")
         logging.warning("Begin Observing Pattern")        
         sleep_trigger = 0
         if self.config["Time"]["Wait_Night"] == "True":
             while ephem.Date(datetime.datetime.utcnow()) <= self.Twilight_Sunset:
-                if sleep_trigger == 0: logging.debug("daylight_sleeping")
+                if sleep_trigger == 0: 
+                    logging.debug("daylight_sleeping")
+                    slacker(f"Waiting for Night (Planned Start at {str(self.Twilight_Sunset)} UTC)","hourglass_flowing_sand","#add8e6")
                 sleep_trigger += 1
                 a = self.cronitor + "?msg='Daylight'"
                 os.system(a)
                 time.sleep(self.loop_waits)   
 
         logging.warning("Sun has gone down!")
+        slacker("Good evening, I'm getting going","city_sunset","#add8e6")
         if not os.path.isfile(self.log_filename): ImagingControl.buildLog(self)
         
         a = "pkill -f gphoto2"
@@ -141,6 +166,7 @@ class ImagingControl:
         os.system(a)
 
         fail_count = 3
+        fail_state = False
         counter = 1
         while ephem.Date(datetime.datetime.utcnow()) <= self.Twilight_Sunrise:
             logging.debug('Sun below twilight limit...taking image')
@@ -152,22 +178,33 @@ class ImagingControl:
 
             if new_count == file_count:
                 logging.critical("PANIC: No Image Saved In Loop")
+                if fail_count == 3 and counter == 1:
+                    slacker("First Image Has Failed","police_car_light","#9b111e")
                 a = "pkill -f gphoto2"
                 os.system(a)
                 a = "gphoto2 --reset"
                 os.system(a)
+                if fail_state == False and counter != 1:
+                    slacker("Imaging Failure: trying to recover","police_car_light","#9b111e")
                 fail_count += 1
+                fail_state = True
             else:
                 a = self.cronitor + "?msg='Imaging'"
                 os.system(a)            
                 logging.debug('Image %d done' % counter)
+                if counter == 1:
+                    slacker("First Image Success","night_with_stars","#228b22")
                 counter += 1
+                if fail_state == True:
+                    slacker("Imaging seems to have recovered","smile","#228b22")
+                    fail_state = False
 
             if fail_count % 5 == 0:
                 logging.error('Cycling Camera Power')
+                slacker("Trying to cycle camera power","hammer_and_wrench","#EED202")
                 a = self.power_off
                 os.system(a)
-                time.sleep(10)
+                time.sleep(300)
                 a = self.power_on
                 os.system(a)
                 fail_count += 1
@@ -197,17 +234,25 @@ class ImagingControl:
         logging.debug('Time now ' + str(datetime.datetime.utcnow()))
         logging.debug('Bed Time, I sleep in the Day!')
         a = self.cronitor + "?msg='WakingUp'"
+        slacker("Good morning, I'm going to bed","bed","#add8e6")
         os.system(a)
         time.sleep(self.loop_waits * 2)
 
-def main():
-    continuous = True
-    while continuous == True:
-        observe = ImagingControl(os.path.expanduser("~") + "/allsky.ini")
-        observe.allsky()
-        logging.debug("Build New Night")
+@add_method(ImagingControl)        
+def slacker(slack,emoji,colour):
+    send = f'bash $HOME/slacker_2.bash "{slack}" "{emoji}" "{colour}"'
+    os.system(send)
 
-    logging.error("goodbye for some reason")            
+def main():
+    slacker("Allsky starting up, did I Reboot?","wave","#228b22")
+    #continuous = True
+    #while continuous == True:
+    observe = ImagingControl(os.path.expanduser("~") + "/allsky.ini")
+    observe.allsky()
+    #    logging.debug("Build New Night")
+
+    #logging.error("goodbye for some reason")
+    slacker("End of Allsky, restart should occur","rotating_light","#9b111e")            
 
 if __name__ == "__main__":
     main()
