@@ -76,11 +76,14 @@ pitunnel --port=1883 --name=MQQT$DEVICE --persist
 
 curl https://cronitor.io/install-linux?sudo=1 -H "API-KEY: $CRONKEY"  | sh
 
-line="*/10 * * * * bash $HOME/auto_start_script.sh"
+line="@reboot bash $HOME/auto_start_script.sh"
 (crontab -l; echo "$line" ) | crontab -
-cronitor discover --auto
 
-line="*/10 * * * * bash camera_heartbeat.sh"
+line="00 16 * * * bash $HOME/auto_start_script.sh"
+(crontab -l; echo "$line" ) | crontab -
+#cronitor discover --auto
+
+line="*/59 * * * * bash camera_heartbeat.sh"
 (crontab -l; echo "$line" ) | crontab -  
 line="30 15 * * * bash check_space.bash"
 (crontab -l; echo "$line" ) | crontab -  
