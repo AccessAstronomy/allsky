@@ -81,15 +81,12 @@ line="@reboot bash $HOME/auto_start_script.sh"
 
 line="00 16 * * * bash $HOME/auto_start_script.sh"
 (crontab -l; echo "$line" ) | crontab -
-#cronitor discover --auto
-
 line="*/59 * * * * bash camera_heartbeat.sh"
 (crontab -l; echo "$line" ) | crontab -  
 line="30 15 * * * bash check_space.bash"
 (crontab -l; echo "$line" ) | crontab -  
 line="30 7 * * * bash goodmorning.bash"
 (crontab -l; echo "$line" ) | crontab -  
-
 
 echo 'listener 1883' | sudo tee -a /etc/mosquitto/mosquitto.conf
 echo 'allow_anonymous true' | sudo tee -a /etc/mosquitto/mosquitto.conf
