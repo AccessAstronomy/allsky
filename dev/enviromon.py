@@ -7,7 +7,7 @@ __author__ = "Jake Noel-Storr"
 __copyright__ = "Copyright 2025, AccessAstronomy.eu"
 __credits__ = ["Jake Noel-Storr", "Dirk van der Geest"]
 __license__ = "GPL"
-__version__ = "0.1.1"
+__version__ = "0.2.1"
 __maintainer__ = "Jake Noel-Storr"
 __email__ = "jake@accessastronomy.eu"
 __status__ = "Development"
@@ -24,21 +24,23 @@ import requests_cache
 from retry_requests import retry
 from configparser import ConfigParser
 import subprocess
-#from statusbyte import StatusByte
+from statusbyte import StatusByte
 
-config_file = "allsky.ini"
 
-#status = StatusByte()
-#status._read_status_file()
+class EnviroMon:
+	def __init__(self):
+		self.config_file = "allsky.ini"
+		self.status = StatusByte()
+		self.status._read_status_file()
 
-config = ConfigParser()
-config.read(config_file)
-lat, lon = config["Location"]["Camera_Latitude"], config["Location"]["Camera_Longitude"]
-device_name = config["Paths"]["Camera_ID"]
-do_DHT, DHT_Type, DHT_Pin = config["Environment"].getboolean("Box_DHT"), config["Environment"]["DHT_Type"], config["Environment"]["DHT_Pin"] 
 
-#sensor = adafruit_dht.DHT22(board.D12)
-sensor = getattr(adafruit_dht, DHT_Type)(getattr(board, DHT_Pin))
+	def configure(self):
+		config = ConfigParser()
+		config.read(self.config_file)
+		self.lat, self.lon = config["Location"]["Camera_Latitude"], config["Location"]["Camera_Longitude"]
+		self.device_name = config["Paths"]["Camera_ID"]
+		self.do_DHT, self.DHT_Type, self.DHT_Pin = config["Environment"].getboolean("Box_DHT"), config["Environment"]["DHT_Type"], config["Environment"]["DHT_Pin"]
+		self.sensor = adafruit_dht.getattr(adafruit_dht, self.DHT_Type)(getattr(board, self.DHT_Pin))
 
 dtstr = dt.datetime.now()
 tmrw = dtstr + dt.timedelta(hours = 12)
@@ -46,6 +48,7 @@ tmrw = dtstr + dt.timedelta(hours = 12)
 box_temp = None
 box_humidity = None
 
+if 
 while do_DHT:
 	try:
 		box_temp = sensor.temperature
@@ -94,3 +97,8 @@ cpu_temp = os.popen("vcgencmd measure_temp").readline().replace("temp=","").repl
 cmd = f"echo {dtstr} {box_temp} {box_humidity} {cpu_temp} {exif_ccd_temp} {exif_color_temp} {current_temperature_2m} {current_relative_humidity_2m} {current_cloud_cover} {current_precipitation} {current_visibility} >> $HOME/enviro.dat"
 os.system(cmd)
   
+def main():
+	pass
+
+if __name__ == "__main__":
+    main()
