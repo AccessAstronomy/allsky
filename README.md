@@ -24,6 +24,7 @@ bash <(curl -sL https://raw.githubusercontent.com/AccessAstronomy/wormgat/refs/h
 ```
 
 * To remove pi-tunnel, FIRST! log in via wormgat, then run:
+
 curl -sL https://pitunnel.com/uninstall | sudo python
 
 * There is generally a large linux install tarball in the home directory that you can delete
