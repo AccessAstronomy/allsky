@@ -23,9 +23,10 @@ bash <(curl -sL https://github.com/AccessAstronomy/allsky/raw/refs/heads/main/en
 bash <(curl -sL https://raw.githubusercontent.com/AccessAstronomy/wormgat/refs/heads/main/auto_tunnel.sh)
 ```
 
-* To remove pi-tunnel, FIRST! log in via wormgat, then run:
+* To remove pi-tunnel, **FIRST!** log in via wormgat: then run:
 
 curl -sL https://pitunnel.com/uninstall | sudo python
+(then as it says in pi-tunnel, remove the device, assuming you are a pitunnel user)
 
 * There is generally a large linux install tarball in the home directory that you can delete
 * You need to update the slack token in allsky.ini if not there
